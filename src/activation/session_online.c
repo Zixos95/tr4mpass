@@ -9,6 +9,7 @@
 #include "activation/session.h"
 #include "device/device.h"
 #include "util/log.h"
+#include "util/plist_helpers.h"
 
 #define DRM_HANDSHAKE_URL    "https://albert.apple.com/deviceservices/drmHandshake"
 #define DEVICE_ACTIV_URL     "https://albert.apple.com/deviceservices/deviceActivation"
@@ -116,8 +117,8 @@ int session_drm_handshake_online(device_info_t *dev, plist_t session_info,
 
     log_info("[session_online] Got %zu bytes from drmHandshake", resp.len);
 
-    plist_from_memory((const char *)resp.data, (uint32_t)resp.len,
-                      handshake_response, NULL);
+    *handshake_response = plist_from_xml_string((const char *)resp.data,
+                                                (uint32_t)resp.len);
     free(resp.data);
 
     if (!*handshake_response) {
@@ -184,8 +185,8 @@ int session_device_activation_online(device_info_t *dev,
 
     log_info("[session_online] Got %zu bytes from deviceActivation", resp.len);
 
-    plist_from_memory((const char *)resp.data, (uint32_t)resp.len,
-                      activation_record, NULL);
+    *activation_record = plist_from_xml_string((const char *)resp.data,
+                                               (uint32_t)resp.len);
     free(resp.data);
 
     if (!*activation_record) {
@@ -291,8 +292,8 @@ int session_probe_albert(device_info_t *dev, plist_t session_info)
 
         if (cb_data && cb_len > 0) {
             /* CollectionBlob bytes are themselves an XML plist */
-            plist_t cb_plist = NULL;
-            plist_from_memory(cb_data, (uint32_t)cb_len, &cb_plist, NULL);
+            plist_t cb_plist = plist_from_xml_string(cb_data,
+                                                     (uint32_t)cb_len);
 
             if (cb_plist) {
                 plist_t ib = plist_dict_get_item(cb_plist, "IngestBody");
@@ -380,8 +381,8 @@ skip_ingest:
            resp.len);
 
     /* Parse and dump top-level keys of the handshake response */
-    plist_from_memory((const char *)resp.data, (uint32_t)resp.len,
-                      &hs_resp, NULL);
+    hs_resp = plist_from_xml_string((const char *)resp.data,
+                                    (uint32_t)resp.len);
     free(resp.data);
 
     if (hs_resp) {
