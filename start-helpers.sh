@@ -108,7 +108,7 @@ install_deps_macos() {
 }
 
 install_deps_linux_apt() {
-    local apt_pkgs="libimobiledevice-dev libirecovery-1.0-dev libusb-1.0-0-dev libplist-dev libssl-dev libcurl4-openssl-dev libssh2-1-dev pkg-config build-essential"
+    local apt_pkgs="libimobiledevice-dev libimobiledevice-utils libirecovery-1.0-dev libirecovery-utils libusb-1.0-0-dev libplist-dev libssl-dev libcurl4-openssl-dev libssh2-1-dev pkg-config build-essential usbmuxd"
     msg_info "Installing dependencies via apt..."
     sudo apt-get update -qq
     sudo apt-get install -y $apt_pkgs
@@ -116,7 +116,7 @@ install_deps_linux_apt() {
 }
 
 install_deps_linux_dnf() {
-    local dnf_pkgs="libimobiledevice-devel libirecovery-devel libusb1-devel libplist-devel openssl-devel libcurl-devel libssh2-devel pkg-config gcc make"
+    local dnf_pkgs="libimobiledevice-devel libimobiledevice-utils libirecovery-devel libirecovery-utils libusb1-devel libplist-devel openssl-devel libcurl-devel libssh2-devel pkg-config gcc make usbmuxd"
     msg_info "Installing dependencies via dnf..."
     sudo dnf install -y $dnf_pkgs
     msg_ok "DNF dependencies installed."
@@ -249,6 +249,12 @@ check_normal() {
         local devices
         devices="$(idevice_id -l 2>/dev/null || true)"
         if [ -n "$devices" ]; then
+            return 0
+        fi
+    fi
+    # Fallback: USB visible but usbmux not paired yet (or utils missing).
+    if command -v lsusb >/dev/null 2>&1; then
+        if lsusb 2>/dev/null | grep -qE '05ac:12[0-9a-f]{2}'; then
             return 0
         fi
     fi

@@ -144,8 +144,9 @@ brew install libimobiledevice libirecovery libusb libplist openssl pkg-config cu
 
 ```bash
 sudo apt-get install -y \
-    libimobiledevice-dev libirecovery-1.0-dev libusb-1.0-0-dev \
-    libplist-dev libssl-dev libcurl4-openssl-dev libssh2-1-dev \
+    libimobiledevice-dev libimobiledevice-utils libirecovery-1.0-dev \
+    libirecovery-utils libusb-1.0-0-dev libplist-dev libssl-dev \
+    libcurl4-openssl-dev libssh2-1-dev usbmuxd \
     pkg-config build-essential
 ```
 
