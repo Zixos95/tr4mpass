@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <plist/plist.h>
+#include "util/plist_compat.h"
 
 /*
  * Retrieve a string value from a plist dict by key.

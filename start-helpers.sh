@@ -101,14 +101,14 @@ install_deps_macos() {
         exit 1
     fi
 
-    local brew_pkgs="libimobiledevice libirecovery libusb libplist openssl pkg-config libssh2"
+    local brew_pkgs="libimobiledevice libirecovery libusb libplist openssl pkg-config curl libssh2"
     msg_info "Installing dependencies via Homebrew..."
     brew install $brew_pkgs
     msg_ok "Homebrew dependencies installed."
 }
 
 install_deps_linux_apt() {
-    local apt_pkgs="libimobiledevice-dev libirecovery-1.0-dev libusb-1.0-0-dev libplist-dev libssl-dev libssh2-1-dev pkg-config build-essential"
+    local apt_pkgs="libimobiledevice-dev libirecovery-1.0-dev libusb-1.0-0-dev libplist-dev libssl-dev libcurl4-openssl-dev libssh2-1-dev pkg-config build-essential"
     msg_info "Installing dependencies via apt..."
     sudo apt-get update -qq
     sudo apt-get install -y $apt_pkgs
@@ -116,7 +116,7 @@ install_deps_linux_apt() {
 }
 
 install_deps_linux_dnf() {
-    local dnf_pkgs="libimobiledevice-devel libirecovery-devel libusb1-devel libplist-devel openssl-devel libssh2-devel pkg-config gcc make"
+    local dnf_pkgs="libimobiledevice-devel libirecovery-devel libusb1-devel libplist-devel openssl-devel libcurl-devel libssh2-devel pkg-config gcc make"
     msg_info "Installing dependencies via dnf..."
     sudo dnf install -y $dnf_pkgs
     msg_ok "DNF dependencies installed."
@@ -156,7 +156,7 @@ install_deps() {
                 dnf) install_deps_linux_dnf ;;
                 pacman)
                     msg_warn "Arch Linux detected. Install from AUR:"
-                    msg_info "  yay -S libimobiledevice libirecovery libusb libplist openssl libssh2 pkg-config base-devel"
+                    msg_info "  yay -S libimobiledevice libirecovery libusb libplist openssl curl libssh2 pkg-config base-devel"
                     msg_info "  or: paru -S libimobiledevice-git libirecovery-git libssh2"
                     msg_info "Re-run this script after installing."
                     exit 1
@@ -169,8 +169,9 @@ install_deps() {
     if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
         msg_err "Still missing after install: ${MISSING_DEPS[*]}"
         msg_info "Please install them manually and re-run this script."
+        msg_info "  libcurl is required for online activation requests."
         msg_info "  libssh2 is required for Phase 2C SSH jailbreak delivery."
-        msg_info "  If libssh2 was just installed, re-running should pick it up."
+        msg_info "  If packages were just installed, re-running should pick them up."
         exit 1
     fi
 
@@ -196,7 +197,12 @@ build_project() {
     msg_info "Building tr4mpass..."
     if ! (cd "$SCRIPT_DIR" && make clean && make); then
         msg_err "Build failed. Check compiler output above."
-        msg_info "If the linker reports 'library not found for -lssh2', install libssh2"
+        msg_info "If curl/curl.h is missing, install libcurl development headers:"
+        msg_info "  macOS:  brew install curl"
+        msg_info "  Debian: sudo apt install libcurl4-openssl-dev"
+        msg_info "  Fedora: sudo dnf install libcurl-devel"
+        msg_info "  Arch:   sudo pacman -S curl"
+        msg_info "If the linker reports 'library not found for -lssh2', install libssh2:"
         msg_info "  macOS:  brew install libssh2"
         msg_info "  Debian: sudo apt install libssh2-1-dev"
         msg_info "  Fedora: sudo dnf install libssh2-devel"

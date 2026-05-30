@@ -28,9 +28,9 @@ else
 fi
 
 # ------------------------------------------------------------------ #
-# pkg-config dependency list.  libssh2 is consumed by the Phase 2C   #
-# SSH jailbreak path; if the distro package is missing at build time #
-# the production link will fail with "library not found for -lssh2". #
+# pkg-config dependency list.  libcurl is used for online activation   #
+# server requests; libssh2 is consumed by the Phase 2C SSH jailbreak #
+# path.  Missing packages at build time cause compile/link failures. #
 # Install hints are provided by the helpers for every platform.      #
 # ------------------------------------------------------------------ #
 
@@ -40,6 +40,7 @@ PKGCONFIG_DEPS=(
     "libusb-1.0"
     "libplist-2.0"
     "openssl"
+    "libcurl"
     "libssh2"
 )
 

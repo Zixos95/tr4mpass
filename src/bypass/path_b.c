@@ -16,7 +16,7 @@
 #include <plist/plist.h>
 #include <libusb-1.0/libusb.h>
 #include <libimobiledevice/libimobiledevice.h>
-#include <libirecovery.h>
+#include "util/libirecovery_compat.h"
 
 #include "bypass/path_b.h"
 #include "bypass/signal.h"
@@ -193,9 +193,9 @@ static int step_reboot_to_normal(device_info_t *dev)
 
     /* Open recovery device to send reboot command */
     if (dev->ecid != 0)
-        err = irecv_open_with_ecid_and_attempts(&client, (uint64_t)dev->ecid, 5);
+        err = tr4mpass_irecv_open_with_ecid_and_attempts(&client, (uint64_t)dev->ecid, 5);
     else
-        err = irecv_open_with_ecid_and_attempts(&client, 0, 5);
+        err = tr4mpass_irecv_open_with_ecid_and_attempts(&client, 0, 5);
 
     if (err != IRECV_E_SUCCESS || !client) {
         log_error("[path_b] Could not open iRecovery for reboot: %s",

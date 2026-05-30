@@ -134,7 +134,7 @@ make
 <summary>Manual dependency install -- macOS</summary>
 
 ```bash
-brew install libimobiledevice libirecovery libusb libplist openssl pkg-config
+brew install libimobiledevice libirecovery libusb libplist openssl pkg-config curl libssh2
 ```
 
 </details>
@@ -145,7 +145,8 @@ brew install libimobiledevice libirecovery libusb libplist openssl pkg-config
 ```bash
 sudo apt-get install -y \
     libimobiledevice-dev libirecovery-1.0-dev libusb-1.0-0-dev \
-    libplist-dev libssl-dev pkg-config build-essential
+    libplist-dev libssl-dev libcurl4-openssl-dev libssh2-1-dev \
+    pkg-config build-essential
 ```
 
 </details>
@@ -156,7 +157,8 @@ sudo apt-get install -y \
 ```bash
 sudo dnf install -y \
     libimobiledevice-devel libirecovery-devel libusb1-devel \
-    libplist-devel openssl-devel pkg-config gcc make
+    libplist-devel openssl-devel libcurl-devel libssh2-devel \
+    pkg-config gcc make
 ```
 
 </details>

@@ -63,7 +63,7 @@ irecv_error_t irecv_open_with_ecid(irecv_client_t *client, uint64_t ecid)
     if (!c)
         return (irecv_error_t)-2;
     c->magic         = IRECV_MAGIC;
-    c->info.pid      = (uint16_t)g_irecv_info_pid;
+    c->usb_mode         = (int)g_irecv_info_pid;
     c->info.ecid     = ecid != 0 ? ecid : g_irecv_info_ecid;
     c->info.cpid     = 0x8020;
     c->info.have_ecid = 1;
@@ -112,6 +112,19 @@ const struct irecv_device_info *irecv_get_device_info(irecv_client_t client)
     if (!client)
         return NULL;
     return &client->info;
+}
+
+irecv_error_t irecv_get_mode(irecv_client_t client, int *mode)
+{
+    mock_log_append("irecv_get_mode");
+    if (!mode)
+        return IRECV_E_INVALID_INPUT;
+    if (!client) {
+        *mode = (int)g_irecv_info_pid;
+        return IRECV_E_SUCCESS;
+    }
+    *mode = client->usb_mode;
+    return IRECV_E_SUCCESS;
 }
 
 irecv_error_t irecv_send_command(irecv_client_t client, const char *command)

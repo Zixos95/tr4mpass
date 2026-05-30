@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <libusb-1.0/libusb.h>
-#include <libirecovery.h>
+#include "util/libirecovery_compat.h"
 
 #include "bypass/path_b.h"
 #include "device/usb_dfu.h"
@@ -144,10 +144,10 @@ int path_b_read_serial(device_info_t *dev, char *buf, size_t len)
         const struct irecv_device_info *info;
 
         if (dev->ecid != 0)
-            err = irecv_open_with_ecid_and_attempts(&client,
-                                                    (uint64_t)dev->ecid, 5);
+            err = tr4mpass_irecv_open_with_ecid_and_attempts(&client,
+                                                             (uint64_t)dev->ecid, 5);
         else
-            err = irecv_open_with_ecid_and_attempts(&client, 0, 5);
+            err = tr4mpass_irecv_open_with_ecid_and_attempts(&client, 0, 5);
 
         if (err != IRECV_E_SUCCESS || !client) {
             log_error("[path_b_id] iRecovery open failed for serial read: %s",
@@ -185,7 +185,6 @@ int path_b_write_serial_irecovery(device_info_t *dev, const char *new_serial)
 {
     irecv_client_t client = NULL;
     irecv_error_t  err;
-    const struct irecv_device_info *info;
     char           cmd[DFU_SERIAL_MAX + 32];
     int            rc = -1;
 
@@ -197,9 +196,9 @@ int path_b_write_serial_irecovery(device_info_t *dev, const char *new_serial)
     /* Open device -- prefer ECID match to avoid touching wrong device.
      * irecv_open_with_ecid with ecid=0 matches any connected device. */
     if (dev->ecid != 0)
-        err = irecv_open_with_ecid_and_attempts(&client, (uint64_t)dev->ecid, 5);
+        err = tr4mpass_irecv_open_with_ecid_and_attempts(&client, (uint64_t)dev->ecid, 5);
     else
-        err = irecv_open_with_ecid_and_attempts(&client, 0, 5);
+        err = tr4mpass_irecv_open_with_ecid_and_attempts(&client, 0, 5);
 
     if (err != IRECV_E_SUCCESS || !client) {
         log_error("[path_b_id] Could not open device in recovery mode: %s",
@@ -207,13 +206,21 @@ int path_b_write_serial_irecovery(device_info_t *dev, const char *new_serial)
         return -1;
     }
 
-    /* Verify the device is actually in recovery (not DFU or normal) */
-    info = irecv_get_device_info(client);
-    if (!info || info->pid != APPLE_RECOVERY_PID) {
-        log_error("[path_b_id] Device is not in recovery mode (pid=0x%04X)",
-                  info ? (unsigned)info->pid : 0);
-        irecv_close(client);
-        return -1;
+    /* Verify the device is actually in recovery (not DFU or normal). */
+    {
+        unsigned pid = 0;
+
+        if (tr4mpass_irecv_usb_pid(client, &pid) != 0) {
+            log_error("[path_b_id] Could not query iRecovery mode");
+            irecv_close(client);
+            return -1;
+        }
+        if (pid != APPLE_RECOVERY_PID) {
+            log_error("[path_b_id] Device is not in recovery mode (pid=0x%04X)",
+                      pid);
+            irecv_close(client);
+            return -1;
+        }
     }
 
     /* Set the serial-number environment variable */

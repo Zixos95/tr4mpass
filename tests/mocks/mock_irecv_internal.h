@@ -16,6 +16,7 @@ struct irecv_client_private {
     uint32_t magic;
     struct irecv_device_info info;
     char serial_buf[128];
+    int  usb_mode;
 };
 
 #define IRECV_MAGIC 0x49525256u  /* "IRRV" */

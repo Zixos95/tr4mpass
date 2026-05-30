@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 #include <plist/plist.h>
+#include "util/plist_compat.h"
 #include <libimobiledevice/lockdown.h>
 #include "device/device.h"
 

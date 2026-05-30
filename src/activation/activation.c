@@ -12,6 +12,7 @@
 
 #include "activation/activation.h"
 #include "util/log.h"
+#include "util/plist_helpers.h"
 
 #define LOG_TAG "[activation]"
 

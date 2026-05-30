@@ -9,12 +9,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "util/plist_compat.h"
 #include "bypass/path_a.h"
 #include "bypass/deletescript.h"
 #include "exploit/checkm8.h"
 #include "activation/activation.h"
 #include "activation/record.h"
 #include "util/log.h"
+#include "util/plist_helpers.h"
 
 #include "bypass/path_a_internal.h"
 

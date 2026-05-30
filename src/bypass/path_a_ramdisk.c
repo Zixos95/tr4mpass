@@ -33,9 +33,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include <libirecovery.h>
-
-#include "bypass/path_a_internal.h"
+#include "util/libirecovery_compat.h"
 #include "bypass/path_a_ramdisk_internal.h"
 #include "device/device.h"
 #include "util/log.h"
