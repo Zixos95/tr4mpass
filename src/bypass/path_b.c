@@ -30,7 +30,7 @@
 
 /* Polling interval (2 s) and max wait for device mode transitions */
 #define REBOOT_POLL_USEC     2000000
-#define RECOVERY_WAIT_SECS   60
+#define RECOVERY_WAIT_SECS   120
 #define NORMAL_WAIT_SECS     90
 
 /* Apple USB IDs */
